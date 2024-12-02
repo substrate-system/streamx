@@ -1,6 +1,7 @@
 {
-  "name": "streamx",
-  "version": "2.21.1",
+  "name": "@substrate-system/streamx",
+  "type": "module",
+  "version": "2.21.2",
   "description": "An iteration of the Node.js core streams with a series of improvements",
   "main": "index.js",
   "dependencies": {
@@ -31,12 +32,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/mafintosh/streamx.git"
+    "url": "https://github.com/substrate-system/streamx.git"
   },
   "author": "Mathias Buus (@mafintosh)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/mafintosh/streamx/issues"
+    "url": "https://github.com/substrate-system/streamx/issues"
   },
-  "homepage": "https://github.com/mafintosh/streamx"
+  "homepage": "https://github.com/substrate-system/streamx"
 }
