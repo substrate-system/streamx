@@ -1,5 +1,5 @@
-const test = require('brittle')
-const { Readable, Writable } = require('../')
+import test from 'brittle'
+import { Readable, Writable } from '../index.js'
 
 const defaultSizes = [
   { name: 'buf512', item: Buffer.alloc(512), size: 512 },

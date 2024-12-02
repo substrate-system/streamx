@@ -1,7 +1,7 @@
-const eos = require('end-of-stream')
-const test = require('brittle')
-const stream = require('../')
-const finished = require('stream').finished
+import eos from 'end-of-stream'
+import test from 'brittle'
+import stream from '../index.js'
+import { finished } from 'stream/finished'
 
 run(eos)
 run(finished)

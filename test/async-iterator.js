@@ -1,5 +1,5 @@
-const test = require('brittle')
-const { Readable } = require('../')
+import test from 'brittle'
+import { Readable } from '../index.js'
 
 test('streams are async iterators', async function (t) {
   const data = ['a', 'b', 'c', null]

@@ -1,5 +1,5 @@
-const test = require('brittle')
-const { Writable, Readable } = require('../')
+import test from 'brittle'
+import { Writable, Readable } from '../index.js'
 
 test('write backpressure', function (t) {
   const ws = new Writable()

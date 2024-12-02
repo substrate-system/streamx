@@ -1,10 +1,10 @@
-const { EventEmitter } = require('events')
+import { EventEmitter } from 'events'
+
+import queueTick from 'queue-tick'
+import FIFO from 'fast-fifo'
+import TextDecoder from 'text-decoder'
 const STREAM_DESTROYED = new Error('Stream was destroyed')
 const PREMATURE_CLOSE = new Error('Premature close')
-
-const queueTick = require('queue-tick')
-const FIFO = require('fast-fifo')
-const TextDecoder = require('text-decoder')
 
 /* eslint-disable no-multi-spaces */
 
@@ -115,7 +115,7 @@ const WRITE_DROP_DATA = WRITE_FINISHING | WRITE_DONE | DESTROY_STATUS
 
 const asyncIterator = Symbol.asyncIterator || Symbol('asyncIterator')
 
-class WritableState {
+export class WritableState {
   constructor (stream, { highWaterMark = 16384, map = null, mapWritable, byteLength, byteLengthWritable } = {}) {
     this.stream = stream
     this.queue = new FIFO()
@@ -237,7 +237,7 @@ class WritableState {
   }
 }
 
-class ReadableState {
+export class ReadableState {
   constructor (stream, { highWaterMark = 16384, map = null, mapReadable, byteLength, byteLengthReadable } = {}) {
     this.stream = stream
     this.queue = new FIFO()
@@ -431,7 +431,7 @@ class ReadableState {
   }
 }
 
-class TransformState {
+export class TransformState {
   constructor (stream) {
     this.data = null
     this.afterTransform = afterTransform.bind(stream)
@@ -439,7 +439,7 @@ class TransformState {
   }
 }
 
-class Pipeline {
+export class Pipeline {
   constructor (src, dst, cb) {
     this.from = src
     this.to = dst
@@ -620,7 +620,7 @@ function newListener (name) {
   }
 }
 
-class Stream extends EventEmitter {
+export class Stream extends EventEmitter {
   constructor (opts) {
     super()
 
@@ -692,7 +692,7 @@ class Stream extends EventEmitter {
   }
 }
 
-class Readable extends Stream {
+export class Readable extends Stream {
   constructor (opts) {
     super(opts)
 
@@ -864,7 +864,7 @@ class Readable extends Stream {
   }
 }
 
-class Writable extends Stream {
+export class Writable extends Stream {
   constructor (opts) {
     super(opts)
 
@@ -928,7 +928,7 @@ class Writable extends Stream {
   }
 }
 
-class Duplex extends Readable { // and Writable
+export class Duplex extends Readable { // and Writable
   constructor (opts) {
     super(opts)
 
@@ -975,7 +975,7 @@ class Duplex extends Readable { // and Writable
   }
 }
 
-class Transform extends Duplex {
+export class Transform extends Duplex {
   constructor (opts) {
     super(opts)
     this._transformState = new TransformState(this)
@@ -1027,7 +1027,7 @@ class Transform extends Duplex {
   }
 }
 
-class PassThrough extends Transform {}
+export class PassThrough extends Transform {}
 
 function transformAfterFlush (err, data) {
   const cb = this._transformState.afterFinal
@@ -1037,7 +1037,7 @@ function transformAfterFlush (err, data) {
   cb(null)
 }
 
-function pipelinePromise (...streams) {
+export function pipelinePromise (...streams) {
   return new Promise((resolve, reject) => {
     return pipeline(...streams, (err) => {
       if (err) return reject(err)
@@ -1046,7 +1046,7 @@ function pipelinePromise (...streams) {
   })
 }
 
-function pipeline (stream, ...streams) {
+export function pipeline (stream, ...streams) {
   const all = Array.isArray(stream) ? [...stream, ...streams] : [stream, ...streams]
   const done = (all.length && typeof all[all.length - 1] === 'function') ? all.pop() : null
 
@@ -1114,69 +1114,45 @@ function echo (s) {
   return s
 }
 
-function isStream (stream) {
+export function isStream (stream) {
   return !!stream._readableState || !!stream._writableState
 }
 
-function isStreamx (stream) {
+export function isStreamx (stream) {
   return typeof stream._duplexState === 'number' && isStream(stream)
 }
 
-function isEnded (stream) {
+export function isEnded (stream) {
   return !!stream._readableState && stream._readableState.ended
 }
 
-function isFinished (stream) {
+export function isFinished (stream) {
   return !!stream._writableState && stream._writableState.ended
 }
 
-function getStreamError (stream, opts = {}) {
+export function getStreamError (stream, opts = {}) {
   const err = (stream._readableState && stream._readableState.error) || (stream._writableState && stream._writableState.error)
 
   // avoid implicit errors by default
   return (!opts.all && err === STREAM_DESTROYED) ? null : err
 }
 
-function isReadStreamx (stream) {
+export function isReadStreamx (stream) {
   return isStreamx(stream) && stream.readable
 }
 
-function isDisturbed (stream) {
-  return (stream._duplexState & OPENING) !== OPENING || (stream._duplexState & ACTIVE_OR_TICKING) !== 0
-}
-
-function isTypedArray (data) {
+export function isTypedArray (data) {
   return typeof data === 'object' && data !== null && typeof data.byteLength === 'number'
 }
 
-function defaultByteLength (data) {
+export function defaultByteLength (data) {
   return isTypedArray(data) ? data.byteLength : 1024
 }
 
-function noop () {}
-
-function abort () {
+export function abort () {
   this.destroy(new Error('Stream aborted.'))
 }
 
-function isWritev (s) {
+export function isWritev (s) {
   return s._writev !== Writable.prototype._writev && s._writev !== Duplex.prototype._writev
-}
-
-module.exports = {
-  pipeline,
-  pipelinePromise,
-  isStream,
-  isStreamx,
-  isEnded,
-  isFinished,
-  isDisturbed,
-  getStreamError,
-  Stream,
-  Writable,
-  Readable,
-  Duplex,
-  Transform,
-  // Export PassThrough for compatibility with Node.js core's stream module
-  PassThrough
 }
